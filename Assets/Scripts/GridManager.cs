@@ -40,6 +40,8 @@ public class GridManager : MonoBehaviour
                 spawnTile.tRow = row;
                 spawnTile.tCol = col;
                 spawnTile.name = $"Tile {row} {col}";
+                spawnTile.tempRes = 1;
+                spawnTile.resNum = 0;
 
                 //var isOffset = (row % 2 == 0 && col % 2 != 0) || (row % 2 != 0 && col % 2 == 0);
 
@@ -52,10 +54,12 @@ public class GridManager : MonoBehaviour
 
         for (int i = 0; i < numNodes; i++)
         {
-            int nbRow, nbCol;
+            int nbRow, nbCol, tempRes;
+            tempRes = Random.Range(500, 1500);
             Spawns = new Vector2Int(Random.Range(0,gridWidth),Random.Range(0,gridHeight));
             var tile = GetTileAtPosition(Spawns);
-            tile.resNum += 100; 
+            tile.resNum += tempRes*4;
+            tile.tempRes = tempRes;
             for (int r = -2; r < 3; r++)
             {
                 nbRow = Spawns.x + r;
@@ -69,12 +73,14 @@ public class GridManager : MonoBehaviour
                             if (Mathf.Abs(r) == 2 || Mathf.Abs(c) == 2)
                             {
                                 var midTile = GetTileAtPosition(new Vector2Int(nbRow, nbCol));
-                                midTile.resNum += 25;
+                                midTile.resNum += tempRes  ;
+                                midTile.tempRes = tempRes;
                             }
                             else if (Mathf.Abs(r) == 1 || Mathf.Abs(c) == 1)
                             {
                                 var midTile = GetTileAtPosition(new Vector2Int(nbRow, nbCol));
-                                midTile.resNum += 50;
+                                midTile.resNum += tempRes*2;
+                                midTile.tempRes = tempRes;
                             }
                         }
                     }

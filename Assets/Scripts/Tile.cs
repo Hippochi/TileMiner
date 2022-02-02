@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public int tRow, tCol, resNum;
+    public int tRow, tCol, resNum = 0, tempRes = 1;
+    public bool isExposed;
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private Color baseColor, lowColor, midColor, highColor, hiddenColor;
     [SerializeField] private GameObject _highlight;
@@ -15,24 +16,30 @@ public class Tile : MonoBehaviour
     {
         GM = FindObjectOfType<GameManager>();
         GridM = FindObjectOfType<GridManager>();
+        isExposed = false;
     }
 
     void Update()
     {
         setHiddenColor();
+
+        if (isExposed == true)
+        {
+            toHiddenCol();
+        }
     }
 
     void setHiddenColor()
     {
-        if (resNum >= 100)
+        if (resNum >= tempRes*4)
         {
             hiddenColor = highColor;
         }
-        else if (resNum >= 50)
+        else if (resNum >= tempRes*2)
         {
             hiddenColor = midColor;
         }
-        else if (resNum >= 25)
+        else if (resNum >= tempRes)
         {
             hiddenColor = lowColor;
         }
@@ -59,7 +66,7 @@ public class Tile : MonoBehaviour
     {
         if (GM.scanMode == true && GM.scans > 0)
         {
-            toHiddenCol();
+            isExposed = true;
             int nbRow, nbCol;
 
             for (int r = -1; r < 2; r++)
@@ -73,7 +80,8 @@ public class Tile : MonoBehaviour
                         if (nbCol >= 0 && nbCol < 32)
                         {
                             Tile nbTile = GameObject.Find($"Tile {nbRow} {nbCol}").GetComponent<Tile>();
-                            nbTile.toHiddenCol();
+                            nbTile.isExposed = true;
+                            
                         }
                     }
                 }
@@ -85,7 +93,7 @@ public class Tile : MonoBehaviour
         if (GM.scanMode == false && GM.extracts > 0)
         {
             GM.total += resNum;
-            resNum = 0;
+            resNum -= tempRes*4;
 
             int nbRow, nbCol;
 
@@ -102,12 +110,12 @@ public class Tile : MonoBehaviour
                             if (Mathf.Abs(r) == 2 || Mathf.Abs(c) == 2)
                             {
                                 var midTile = GridM.GetTileAtPosition(new Vector2Int(nbRow, nbCol));
-                                midTile.resNum -= 25;
+                                midTile.resNum -= tempRes;
                             }
                             else if (Mathf.Abs(r) == 1 || Mathf.Abs(c) == 1)
                             {
                                 var midTile = GridM.GetTileAtPosition(new Vector2Int(nbRow, nbCol));
-                                midTile.resNum -= 25;
+                                midTile.resNum -= tempRes;
                             }
                         }
                     }
